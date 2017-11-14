@@ -1,4 +1,4 @@
-#https://coinone.co.kr/chat/
+import argparse
 import datetime
 import time
 from selenium import webdriver
@@ -11,10 +11,14 @@ import psycopg2
 
 url = 'https://coinone.co.kr/chat/'
 
-def call_loop():
+def call_loop(args):
 
     try:
-        driver = webdriver.Firefox(executable_path="D:/project/geckodriver-v0.19.1-win64/geckodriver.exe")
+        profile = webdriver.FirefoxProfile()
+        driver = webdriver.Firefox(firefox_profile=profile)
+        if not args.showwindow:
+            driver.minimize_window()
+
         driver.get(url)
         time.sleep(60)
 
@@ -29,8 +33,6 @@ def call_loop():
             item_msg = " ".join(item_temp[1:])
 
             i = i + 1
-
-            #print(item_time, item_id, '---', item_msg)
 
             item = {}
             item['daystr']  = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -80,5 +82,13 @@ def sqlInsert(item):
 
 
 if __name__   == "__main__":
+    parser = argparse.ArgumentParser(description='CoinOne Chat Archive')
+
+    parser.add_argument('-s', dest='showwindow', action='store_true',
+                       required=False, help='Show Window')
+
+    #Parse Argument
+    args = parser.parse_args()
+
     while(1):
-        call_loop()
+        call_loop(args)
