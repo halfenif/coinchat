@@ -91,4 +91,7 @@ if __name__   == "__main__":
     args = parser.parse_args()
 
     while(1):
-        call_loop(args)
+        try:
+            call_loop(args)
+        except Exception as err:
+            print("Exception:{}".format(err))
