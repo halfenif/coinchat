@@ -31,7 +31,7 @@ def get_post(args):
 
     rows = sqlSelect(daystr)
     for row in rows:
-        i = int(int(row['timestr'][:2])/4)
+        i = int(int(row['reghour'])/4)
         post_content[i] = post_content[i] + '[{timestr} {uid}]\t{msg}\n'.format(timestr=row['timestr'], uid=row['uid'], msg=row['msg'])
 
     return post_title, post_content
@@ -43,8 +43,9 @@ def sqlSelect(daystr):
 
     conn = const_dbms.get_conn()
     cur = conn.cursor()
-    query, params = utils.formatQuery(('SELECT daystr, timestr, uid, msg ',
-                                       'FROM tb_chat WHERE daystr = ',
+    query, params = utils.formatQuery(('SELECT daystr, timestr, uid, msg, ',
+                                       "to_char(regdate,'hh24') reghour " ,
+                                       "FROM tb_chat WHERE to_char(regdate, 'yyyy-mm-dd') = ",
                                        Param(daystr), ' ',
                                        'ORDER BY regdate asc'
                                        ),
